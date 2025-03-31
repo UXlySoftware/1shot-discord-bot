@@ -1,3 +1,6 @@
+
+[![Watch the tutorial](https://img.youtube.com/vi/LIz4ANRdPus/maxresdefault.jpg)](https://youtu.be/LIz4ANRdPus)
+
 # 1Shot Discord Bot Demo
 
 This is a minimal example of how to leveral 1Shot API in a Discord Bot. 
