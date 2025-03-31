@@ -1,39 +1,48 @@
 import discord
-from discord.ext import commands
 import os
+from pprint import pprint
 
-# Intents setup
-intents = discord.Intents.default()
-intents.message_content = True
-intents.guilds = True
+from oneshot import get_bearer_token, get_endpoint, call_endpoint
 
-# Bot setup
-bot = commands.Bot(command_prefix="!", intents=intents)
+ENDPOINT_ID = os.getenv("ENDPOINT_ID", "deployToken_endpoint")
 
-# Ensure the user has admin permissions
-def is_admin():
-    async def predicate(ctx):
-        return ctx.author.guild_permissions.administrator
-    return commands.check(predicate)
+access_token = get_bearer_token()
+endpoint = get_endpoint(access_token, ENDPOINT_ID)
 
-# Event triggered when the bot is ready
-@bot.event
-async def on_ready():
-    print(f"Bot is ready and logged in as {bot.user}")
-    try:
-        synced = await bot.tree.sync()  # Sync slash commands with Discord
-        print(f"Synced {len(synced)} command(s).")
-    except Exception as e:
-        print(f"Error syncing commands: {e}")
+bot = discord.Bot()
 
-# Define a slash command
-@bot.tree.command(name="echo", description="Echoes the provided message.")
-async def echo(interaction: discord.Interaction, message: str):
-    """Responds with the user's message."""
-    await interaction.response.send_message(f"You said: {message}")
+class MyView(discord.ui.View): # Create a class called MyView that subclasses discord.ui.View
+    @discord.ui.button(label="Click me!", style=discord.ButtonStyle.primary, emoji="😎") # Create a button with the label "😎 Click me!" with color Blurple
+    async def button_callback(self, button, interaction):
+        await interaction.response.send_message("You clicked the button!") # Send a message when the button is clicked
+
+@bot.slash_command() # Create a slash command
+async def button(ctx):
+    await ctx.respond("This is a button!", view=MyView()) # Send a message with our View class that contains the button
+
+@bot.command(description="Sends the bot's latency.") # this decorator makes a slash command
+async def ping(ctx): # a slash command will be created with the name "ping"
+    print("Ping command called")
+    await ctx.respond(f"Pong! Latency is {bot.latency}")
+
+@bot.command(description="Deploy a token.")
+async def deploy_token(ctx, admin: str, name: str, symbol: str, supply: str):
+    for param in endpoint.params:
+        if param.name == "admin":
+            param.value = admin
+        elif param.name == "name":
+            param.value = name
+        elif param.name == "ticker":
+            param.value = symbol
+        elif param.name == "premint":
+            param.value = supply + "000000000000000000"  # Assuming supply is in wei
+    # Call the endpoint with the updated parameters
+    execution = call_endpoint(access_token, endpoint)
+    await ctx.respond(f"Deploying {name} owned by {admin} with {supply} amount of {symbol}. Transaction Hash: {execution.transactionHash}")
 
 # Replace 'YOUR_BOT_TOKEN' with your actual bot token
 TOKEN = os.getenv("DISCORD_BOT_TOKEN", "YOUR_BOT_TOKEN")
 
 if __name__ == "__main__":
+    print("Starting bot...")
     bot.run(TOKEN)
