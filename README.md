@@ -41,3 +41,5 @@ docker run -d --rm --name bot -e DISCORD_BOT_TOKEN=<get-a-token-from-discord> -e
 ## 6. Add the bot to your server
 
 Add the bot to you server and invoke `/deploy_token`. 
+
+![Demo of the bot in action](deploy-token.gif)
