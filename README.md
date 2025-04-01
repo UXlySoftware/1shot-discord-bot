@@ -3,7 +3,7 @@
 
 # 1Shot Discord Bot Demo
 
-This is a minimal example of how to leveral 1Shot API in a Discord Bot. 
+This is a minimal example of how to leverage 1Shot API in a Discord Bot. 
 
 ## 1. Create a Discord App
 
