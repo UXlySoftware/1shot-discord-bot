@@ -77,7 +77,7 @@ def get_bearer_token():
     else:
         raise Exception(f"Failed to get token: {response.status_code}, {response.text}")
     
-# Helper function to fetch transactions
+# Helper function to fetch available transaction endpoints
 def get_endpoints(bearer_token):
     url = f"{API_BASE_URL}/business/{BUSINESS_ID}/transactions"
     headers = {"Authorization": f"Bearer {bearer_token}"}
@@ -88,7 +88,7 @@ def get_endpoints(bearer_token):
     else:
         raise Exception(f"Failed to fetch transactions: {response.status_code}, {response.text}")
     
-# Helper function to fetch transactions
+# Helper function to fetch a specific transaction endpoint
 def get_endpoint(bearer_token, transactionId):
     url = f"{API_BASE_URL}/transactions/{transactionId}"
     headers = {"Authorization": f"Bearer {bearer_token}"}
@@ -98,6 +98,7 @@ def get_endpoint(bearer_token, transactionId):
     else:
         raise Exception(f"Failed to fetch transactions: {response.status_code}, {response.text}")
     
+# Helper function to call a specific transaction endpoint
 def call_endpoint(bearer_token: str, endpoint: Endpoint):
     url = f"{API_BASE_URL}/transactions/{endpoint.id}/execute"
     print(f"Calling endpoint: {url}")
